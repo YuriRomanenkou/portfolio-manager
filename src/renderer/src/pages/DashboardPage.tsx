@@ -37,6 +37,7 @@ export function DashboardPage() {
       <>
         <Toolbar title="Обзор портфеля" />
         <div className="page-content">
+          <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 20 }}>Dashboard</h1>
           <LoadingSpinner />
         </div>
       </>
@@ -58,6 +59,7 @@ export function DashboardPage() {
     <>
       <Toolbar title="Обзор портфеля" />
       <div className="page-content">
+        <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 20 }}>Dashboard</h1>
         <div className="stats-grid">
               <div className="card">
                 <div className="card-title">
