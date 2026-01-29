@@ -31,6 +31,18 @@ export function DashboardPage() {
     fetchSnapshots()
   }, [])
 
+  // Show loading spinner while data is being fetched
+  if (loading && assets.length === 0) {
+    return (
+      <>
+        <Toolbar title="Обзор портфеля" />
+        <div className="page-content">
+          <LoadingSpinner />
+        </div>
+      </>
+    )
+  }
+
   const gainLossPercent =
     totalValueUsd > 0 && totalGainLoss !== 0
       ? (totalGainLoss / (totalValueUsd - totalGainLoss)) * 100
@@ -46,11 +58,7 @@ export function DashboardPage() {
     <>
       <Toolbar title="Обзор портфеля" />
       <div className="page-content">
-        {loading && assets.length === 0 ? (
-          <LoadingSpinner />
-        ) : (
-          <>
-            <div className="stats-grid">
+        <div className="stats-grid">
               <div className="card">
                 <div className="card-title">
                   <DollarSign size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />
@@ -139,8 +147,6 @@ export function DashboardPage() {
                 </table>
               </div>
             )}
-          </>
-        )}
       </div>
     </>
   )
