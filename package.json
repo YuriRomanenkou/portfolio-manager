@@ -1,0 +1,53 @@
+{
+  "name": "portfolio-manager",
+  "version": "1.0.0",
+  "description": "Desktop portfolio manager application",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "build:win": "electron-vite build && electron-builder --win",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.1.0",
+    "recharts": "^2.15.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "electron-vite": "^5.0.0",
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0"
+  },
+  "build": {
+    "appId": "com.portfolio.manager",
+    "productName": "Portfolio Manager",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "out/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
