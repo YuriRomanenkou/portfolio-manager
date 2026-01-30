@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import type { AssetWithPrice, UpdateAssetInput } from '../../../../shared/types'
 import { ASSET_TYPE_LABELS, isTradeableAsset, isManualValueAsset, isCashAsset } from '../../lib/constants'
@@ -19,6 +19,7 @@ export function EditAssetDialog() {
   const [purchaseDate, setPurchaseDate] = useState('')
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const mouseDownOnOverlay = useRef(false)
 
   useEffect(() => {
     if (asset) {
@@ -54,9 +55,24 @@ export function EditAssetDialog() {
     closeEditAssetDialog()
   }
 
+  const handleOverlayMouseDown = (e: React.MouseEvent) => {
+    mouseDownOnOverlay.current = e.target === e.currentTarget
+  }
+
+  const handleOverlayMouseUp = (e: React.MouseEvent) => {
+    if (mouseDownOnOverlay.current && e.target === e.currentTarget) {
+      closeEditAssetDialog()
+    }
+    mouseDownOnOverlay.current = false
+  }
+
   return (
-    <div className="modal-overlay" onClick={closeEditAssetDialog}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="modal-overlay"
+      onMouseDown={handleOverlayMouseDown}
+      onMouseUp={handleOverlayMouseUp}
+    >
+      <div className="modal">
         <div className="modal-header">
           <span className="modal-title">Редактировать: {asset.name}</span>
           <button className="btn-icon" onClick={closeEditAssetDialog}>
@@ -98,17 +114,7 @@ export function EditAssetDialog() {
             )}
 
             {isManualValueAsset(asset.asset_type) && (
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Оценочная стоимость</label>
-                  <input
-                    className="form-input"
-                    type="number"
-                    step="any"
-                    value={estimatedValue}
-                    onChange={(e) => setEstimatedValue(e.target.value)}
-                  />
-                </div>
+              <>
                 <div className="form-group">
                   <label className="form-label">Валюта</label>
                   <select
@@ -122,10 +128,32 @@ export function EditAssetDialog() {
                     <option value="RUB">RUB</option>
                   </select>
                 </div>
-              </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Оценочная стоимость ({valueCurrency})</label>
+                    <input
+                      className="form-input"
+                      type="number"
+                      step="any"
+                      value={estimatedValue}
+                      onChange={(e) => setEstimatedValue(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Цена покупки ({valueCurrency})</label>
+                    <input
+                      className="form-input"
+                      type="number"
+                      step="any"
+                      value={purchasePrice}
+                      onChange={(e) => setPurchasePrice(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </>
             )}
 
-            <div className="form-row">
+            {!isManualValueAsset(asset.asset_type) && (
               <div className="form-group">
                 <label className="form-label">Цена покупки (USD)</label>
                 <input
@@ -136,15 +164,16 @@ export function EditAssetDialog() {
                   onChange={(e) => setPurchasePrice(e.target.value)}
                 />
               </div>
-              <div className="form-group">
-                <label className="form-label">Дата покупки</label>
-                <input
-                  className="form-input"
-                  type="date"
-                  value={purchaseDate}
-                  onChange={(e) => setPurchaseDate(e.target.value)}
-                />
-              </div>
+            )}
+
+            <div className="form-group">
+              <label className="form-label">Дата покупки</label>
+              <input
+                className="form-input"
+                type="date"
+                value={purchaseDate}
+                onChange={(e) => setPurchaseDate(e.target.value)}
+              />
             </div>
 
             <div className="form-group">

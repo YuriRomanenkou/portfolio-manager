@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Plus, Trash2, X } from 'lucide-react'
 import {
@@ -44,6 +44,7 @@ export function AssetDetailPage() {
   const [txTotal, setTxTotal] = useState('')
   const [txDate, setTxDate] = useState(new Date().toISOString().split('T')[0])
   const [txNotes, setTxNotes] = useState('')
+  const mouseDownOnOverlay = useRef(false)
 
   const asset = assets.find((a) => a.id === Number(id))
 
@@ -227,8 +228,17 @@ export function AssetDetailPage() {
 
         {/* Add transaction dialog */}
         {showAddTransaction && (
-          <div className="modal-overlay" onClick={() => setShowAddTransaction(false)}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-overlay"
+            onMouseDown={(e) => { mouseDownOnOverlay.current = e.target === e.currentTarget }}
+            onMouseUp={(e) => {
+              if (mouseDownOnOverlay.current && e.target === e.currentTarget) {
+                setShowAddTransaction(false)
+              }
+              mouseDownOnOverlay.current = false
+            }}
+          >
+            <div className="modal">
               <div className="modal-header">
                 <span className="modal-title">Новая транзакция</span>
                 <button className="btn-icon" onClick={() => setShowAddTransaction(false)}>

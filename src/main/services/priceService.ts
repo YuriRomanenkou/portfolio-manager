@@ -251,7 +251,18 @@ export async function getAssetsWithPrices(db: Database.Database): Promise<AssetW
 
       // Fallback: non-tradeable or no historical data — use raw purchase_price
       if (gainLossUsd === null && asset.purchase_price && totalValueUsd !== null) {
-        const costBasis = asset.purchase_price * (asset.quantity ?? 1)
+        let purchasePriceUsd = asset.purchase_price
+
+        // For manual-value assets, purchase_price is in the same currency as estimated_value
+        if (['real_estate', 'vehicle', 'collectible', 'electronics', 'other'].includes(asset.asset_type)) {
+          const valueCurrency = asset.value_currency || 'USD'
+          if (valueCurrency !== 'USD') {
+            const rates = await getExchangeRateApiRates(valueCurrency)
+            purchasePriceUsd = asset.purchase_price * (rates['USD'] ?? 1)
+          }
+        }
+
+        const costBasis = purchasePriceUsd * (asset.quantity ?? 1)
         gainLossUsd = totalValueUsd - costBasis
         gainLossPercent = costBasis > 0 ? ((totalValueUsd - costBasis) / costBasis) * 100 : null
       }

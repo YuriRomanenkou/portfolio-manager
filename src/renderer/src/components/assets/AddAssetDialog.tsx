@@ -25,6 +25,7 @@ export function AddAssetDialog() {
   const [submitting, setSubmitting] = useState(false)
 
   const searchTimeout = useRef<ReturnType<typeof setTimeout>>()
+  const mouseDownOnOverlay = useRef(false)
 
   const resetForm = useCallback(() => {
     setName('')
@@ -103,9 +104,24 @@ export function AddAssetDialog() {
 
   if (!addAssetDialogOpen) return null
 
+  const handleOverlayMouseDown = (e: React.MouseEvent) => {
+    mouseDownOnOverlay.current = e.target === e.currentTarget
+  }
+
+  const handleOverlayMouseUp = (e: React.MouseEvent) => {
+    if (mouseDownOnOverlay.current && e.target === e.currentTarget) {
+      closeAddAssetDialog()
+    }
+    mouseDownOnOverlay.current = false
+  }
+
   return (
-    <div className="modal-overlay" onClick={closeAddAssetDialog}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="modal-overlay"
+      onMouseDown={handleOverlayMouseDown}
+      onMouseUp={handleOverlayMouseUp}
+    >
+      <div className="modal">
         <div className="modal-header">
           <span className="modal-title">Добавить актив</span>
           <button className="btn-icon" onClick={closeAddAssetDialog}>
